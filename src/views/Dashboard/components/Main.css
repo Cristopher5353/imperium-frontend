@@ -1,0 +1,25 @@
+.container-information {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.item-information {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.container-charts {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(1, 1fr);
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.chart-item {
+    padding: 10px;
+}
+@media screen and (min-width: 780px) {
+    .container-charts {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
