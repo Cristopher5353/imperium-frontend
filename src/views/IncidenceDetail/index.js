@@ -28,8 +28,6 @@ export const IncidenceDetail = () => {
 
       if (status === 200) {
         setIncidenceDetail(jsonFetchIncidenceDetail.data);
-        document.querySelector(".loader").style.display = "none";
-        document.getElementById("detail-show").style.opacity = 1;
 
         jsonFetchIncidenceDetail.data.deadline !== null
           ? setBoolResponse(true)
@@ -37,6 +35,9 @@ export const IncidenceDetail = () => {
       }
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde");
+    } finally {
+      document.querySelector(".loader").style.display = "none";
+      document.getElementById("detail-show").style.opacity = 1;
     }
   };
 

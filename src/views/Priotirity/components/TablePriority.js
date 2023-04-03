@@ -21,7 +21,7 @@ export const TablePriority = ({
         <tbody>
           {priotiries.length === 0 ? (
             <tr style={{ textAlign: "center" }}>
-              <td colSpan={4}>Sin Registros</td>
+              <td colSpan={5}>Sin Registros</td>
             </tr>
           ) : (
             priotiries.map((el) => (
