@@ -13,13 +13,17 @@ export const Subcategory = () => {
   const [categories, setCategories] = useState([]);
   const [boolState, setBoolState] = useState(false);
   const [errors, setErrors] = useState({ category_id: "", name: "" });
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const getSubcategories = async () => {
+    document.querySelector(".table-class").style.opacity = 0;
+    document.querySelector(".loader").style.display = "block";
     let token = localStorage.getItem("token");
 
     try {
       let fetchSubcategories = await fetch(
-        `http://127.0.0.1:8000/api/subcategories`,
+        `http://127.0.0.1:8000/api/subcategories/${page}/get`,
         {
           method: "GET",
           headers: {
@@ -32,13 +36,17 @@ export const Subcategory = () => {
       let jsonFetchSubcategories = await fetchSubcategories.json();
       let status = jsonFetchSubcategories.status;
 
+      console.log(jsonFetchSubcategories);
+
       if (status === 200) {
         setSubcategories(jsonFetchSubcategories.data);
-        document.querySelector(".table-class").style.opacity = 1;
-        document.querySelector(".loader").style.display = "none";
+        setTotalPages(jsonFetchSubcategories.totalPages);
       }
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde");
+    } finally {
+      document.querySelector(".table-class").style.opacity = 1;
+      document.querySelector(".loader").style.display = "none";
     }
   };
 
@@ -214,10 +222,16 @@ export const Subcategory = () => {
     }
   };
 
+  const handleChangeSetPage = (plus) => (plus == true) ?setPage(page + 1) : setPage(page - 1);
+
   useEffect(() => {
     getCategories();
     getSubcategories();
   }, [boolState]);
+
+  useEffect(() => {
+    getSubcategories();
+  },[page])
 
   return (
     <>
@@ -246,6 +260,9 @@ export const Subcategory = () => {
             subcategories={subcategories}
             handleClickUpdate={handleClickUpdate}
             handleClickChangeState={handleClickChangeState}
+            page={page}
+            totalPages={totalPages}
+            handleChangeSetPage={handleChangeSetPage}
           />
         </div>
       </div>

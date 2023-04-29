@@ -25,11 +25,12 @@ export const IncidenceResponseShow = () => {
 
       if (status === 200) {
         setIncidenceResponse(jsonFetchIncidenceResponse.data);
-        document.querySelector(".loader").style.display = "none";
-        document.getElementById("response-incidence-show").style.opacity = 1;
       }
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde");
+    } finally {
+      document.querySelector(".loader").style.display = "none";
+      document.getElementById("response-incidence-show").style.opacity = 1;
     }
   };
 
@@ -50,7 +51,6 @@ export const IncidenceResponseShow = () => {
 
       let jsonFetchGetDocument = await fetchGetDocument.json();
       let status = jsonFetchGetDocument.status;
-      console.log(jsonFetchGetDocument);
 
       if (status === 200) {
         try {

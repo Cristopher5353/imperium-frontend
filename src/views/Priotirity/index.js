@@ -12,13 +12,18 @@ export const Priotiry = () => {
   const [priotiries, setPriorities] = useState([]);
   const [boolState, setBoolState] = useState(false);
   const [errors, setErrors] = useState({ name: "" });
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const getPriorities = async () => {
+    document.querySelector(".table-class").style.opacity = 0;
+    document.querySelector(".loader").style.display = "block";
+
     let token = localStorage.getItem("token");
 
     try {
       let fetchPriorities = await fetch(
-        `http://127.0.0.1:8000/api/priorities`,
+        `http://127.0.0.1:8000/api/priorities/${page}/get`,
         {
           method: "GET",
           headers: {
@@ -33,11 +38,13 @@ export const Priotiry = () => {
 
       if (status === 200) {
         setPriorities(jsonFetchPriorities.data);
-        document.querySelector(".table-class").style.opacity = 1;
-        document.querySelector(".loader").style.display = "none";
+        setTotalPages(jsonFetchPriorities.totalPages);
       }
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde");
+    } finally {
+      document.querySelector(".table-class").style.opacity = 1;
+      document.querySelector(".loader").style.display = "none";
     }
   };
 
@@ -183,9 +190,11 @@ export const Priotiry = () => {
     setPriority({ ...priority, [e.target.name]: e.target.value });
   };
 
+  const handleChangeSetPage = (plus) => (plus == true) ?setPage(page + 1) : setPage(page - 1);
+
   useEffect(() => {
     getPriorities();
-  }, [boolState]);
+  }, [boolState, page]);
 
   return (
     <>
@@ -214,6 +223,9 @@ export const Priotiry = () => {
             priotiries={priotiries}
             handleClickUpdate={handleClickUpdate}
             handleClickChangeState={handleClickChangeState}
+            page={page}
+            totalPages={totalPages}
+            handleChangeSetPage={handleChangeSetPage}
           />
         </div>
       </div>

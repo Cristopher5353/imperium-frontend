@@ -11,16 +11,24 @@ export const Incidence = () => {
   const [categories, setCategories] = useState([]);
   const [priotiries, setPriorities] = useState([]);
   const [supportUsers, setSupportUsers] = useState([]);
-  const [filter, setFilter] = useState({ category: "0", priority: "0" });
+  const [filter, setFilter] = useState({ category: 0, priority: 0 });
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [boolConfirmFilter, setBoolConfirmFilter] = useState(false);
 
   const getIncidents = async () => {
+    document.querySelector(".table-class").style.opacity = 0;
+    document.querySelector(".loader").style.display = "block";
+    
+    let url = '';
+
     let token = localStorage.getItem("token");
-
-    let url = `http://127.0.0.1:8000/api/incidents`;
-
-    if(decodeToken().role === 2) {
-      url = `http://127.0.0.1:8000/api/incidents/users/${decodeToken().id}`;
-    } 
+    
+    if(decodeToken().role === 1) {
+      url = `http://127.0.0.1:8000/api/incidents/page/${page}/category/${filter.category}/priority/${filter.priority}/user/0`;
+    } else {
+      url =  `http://127.0.0.1:8000/api/incidents/page/${page}/category/${filter.category}/priority/${filter.priority}/user/${decodeToken().id}`;
+    }
 
     try {
       let fetchIncidents = await fetch(url, {
@@ -36,11 +44,13 @@ export const Incidence = () => {
 
       if (status === 200) {
         setIncidents(jsonFetchIncidents.data);
-        document.querySelector(".table-class").style.opacity = 1;
-        document.querySelector(".loader").style.display = "none";
+        setTotalPages(jsonFetchIncidents.totalPages);
       }
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde" + error);
+    } finally {
+      document.querySelector(".table-class").style.opacity = 1;
+      document.querySelector(".loader").style.display = "none";
     }
   };
 
@@ -100,43 +110,16 @@ export const Incidence = () => {
     setFilter({ ...filter, [e.target.name]: e.target.value });
   };
 
-  const handleSubmitFilter = async (e) => {
+  const handleSubmitFilter = (e) => {
     e.preventDefault();
-
-    let token = localStorage.getItem("token");
-    let url = `http://127.0.0.1:8000/api/incidents/category/0/priority/0/user/0`;
-
-    if(decodeToken().role === 1) {
-      url = `http://127.0.0.1:8000/api/incidents/category/${filter.category}/priority/${filter.priority}/user/0`;
-    } else {
-      url = `http://127.0.0.1:8000/api/incidents/category/${filter.category}/priority/${filter.priority}/user/${decodeToken().id}`;
-    }
-
-    try {
-      let fetchFilter = await fetch(
-        url,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      let jsonFetchFilter = await fetchFilter.json();
-      let status = jsonFetchFilter.status;
-
-      if (status === 200) {
-        setIncidents(jsonFetchFilter.data);
-      }
-    } catch (error) {
-      alert("Error, vuelva a intentarlo más tarde");
-    }
+    setPage(0);
+    setBoolConfirmFilter(boolConfirmFilter ?false :true);
   };
 
   const handleClickSeeAll = () => {
-    getIncidents();
+    setFilter({ category: 0, priority: 0 });
+    setPage(0);
+    setBoolConfirmFilter(boolConfirmFilter ?false :true);
   };
 
   const getSupportUsersWithAssignIncidentsQuantity = async (e) => {
@@ -285,11 +268,21 @@ export const Incidence = () => {
     }
   };
 
+  const handleChangeSetPage = (plus) => (plus == true) ?setPage(page + 1) : setPage(page - 1);
+
   useEffect(() => {
     getCategories();
     getPriorities();
     getIncidents();
   }, []);
+
+  useEffect(() => {
+    getIncidents();
+  }, [page]);
+
+  useEffect(() => {
+    getIncidents();
+  }, [boolConfirmFilter]);
 
   return (
     <div id="main" className="main bg-light pl-5 pr-5">
@@ -320,6 +313,9 @@ export const Incidence = () => {
             getSupportUsersWithAssignIncidentsQuantity
           }
           handleSubmitDeleteSupportAssign={handleSubmitDeleteSupportAssign}
+          page={page}
+          totalPages={totalPages}
+          handleChangeSetPage={handleChangeSetPage}
         />
 
         <ModalSupportAssign

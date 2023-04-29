@@ -2,11 +2,15 @@ import moment from "moment";
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { decodeToken } from "../../../custom/decodeToken";
+import { Pagination } from "../../../components/common/Pagination";
 
 export const TableIncidents = ({
   incidents,
   getSupportUsersWithAssignIncidentsQuantity,
   handleSubmitDeleteSupportAssign,
+  page,
+  totalPages,
+  handleChangeSetPage,
 }) => {
   return (
     <div className="table-responsive table-class" style={{ opacity: 0 }}>
@@ -145,6 +149,11 @@ export const TableIncidents = ({
           )}
         </tbody>
       </table>
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        handleChangeSetPage={handleChangeSetPage}
+      />
     </div>
   );
 };

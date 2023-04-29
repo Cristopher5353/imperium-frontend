@@ -1,10 +1,14 @@
 import moment from "moment/moment";
 import React from "react";
+import { Pagination } from "../../../components/common/Pagination";
 
 export const TableSubcategory = ({
   subcategories,
   handleClickUpdate,
   handleClickChangeState,
+  page,
+  totalPages,
+  handleChangeSetPage,
 }) => {
   return (
     <div className="table-responsive table-class" style={{opacity : 0}}>
@@ -67,6 +71,11 @@ export const TableSubcategory = ({
           )}
         </tbody>
       </table>
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        handleChangeSetPage={handleChangeSetPage}
+      />
     </div>
   );
 };

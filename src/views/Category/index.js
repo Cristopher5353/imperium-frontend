@@ -12,13 +12,17 @@ export const Category = () => {
   const [categories, setCategories] = useState([]);
   const [boolState, setBoolState] = useState(false);
   const [errors, setErrors] = useState({ name: "" });
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const getCategories = async () => {
+    document.querySelector(".table-class").style.opacity = 0;
+    document.querySelector(".loader").style.display = "block";
     let token = localStorage.getItem("token");
 
     try {
       let fetchCategories = await fetch(
-        `http://127.0.0.1:8000/api/categories`,
+        `http://127.0.0.1:8000/api/categories/${page}/get`,
         {
           method: "GET",
           headers: {
@@ -33,11 +37,13 @@ export const Category = () => {
 
       if (status === 200) {
         setCategories(jsonFetchCategories.data);
-        document.querySelector(".table-class").style.opacity = 1;
-        document.querySelector(".loader").style.display = "none";
+        setTotalPages(jsonFetchCategories.totalPages);
       }
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde");
+    } finally {
+      document.querySelector(".table-class").style.opacity = 1;
+      document.querySelector(".loader").style.display = "none";
     }
   };
 
@@ -183,9 +189,11 @@ export const Category = () => {
     setCategory({ ...category, [e.target.name]: e.target.value });
   };
 
+  const handleChangeSetPage = (plus) => (plus == true) ?setPage(page + 1) : setPage(page - 1);
+
   useEffect(() => {
     getCategories();
-  }, [boolState]);
+  }, [boolState, page]);
 
   return (
     <>
@@ -214,6 +222,9 @@ export const Category = () => {
             categories={categories}
             handleClickUpdate={handleClickUpdate}
             handleClickChangeState={handleClickChangeState}
+            page={page}
+            totalPages={totalPages}
+            handleChangeSetPage={handleChangeSetPage}
           />
         </div>
       </div>
