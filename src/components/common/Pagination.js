@@ -5,7 +5,7 @@ export const Pagination = ({page, totalPages, handleChangeSetPage}) => {
         <>
             <div className="d-flex justify-content-between">
         <div>
-          {(totalPages == 0 ?page :page + 1) + " de " + totalPages + " páginas"}
+          {(totalPages === 0 ?page :page + 1) + " de " + totalPages + " páginas"}
         </div>
         <nav aria-label="Page navigation example border">
           <ul class="pagination justify-content-end">

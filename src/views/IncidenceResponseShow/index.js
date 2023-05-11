@@ -85,7 +85,7 @@ export const IncidenceResponseShow = () => {
 
   useEffect(() => {
     getIncidenceResponse();
-  });
+  },[]);
 
   return (
     <>

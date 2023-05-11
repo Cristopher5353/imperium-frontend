@@ -36,8 +36,6 @@ export const Subcategory = () => {
       let jsonFetchSubcategories = await fetchSubcategories.json();
       let status = jsonFetchSubcategories.status;
 
-      console.log(jsonFetchSubcategories);
-
       if (status === 200) {
         setSubcategories(jsonFetchSubcategories.data);
         setTotalPages(jsonFetchSubcategories.totalPages);
@@ -222,7 +220,7 @@ export const Subcategory = () => {
     }
   };
 
-  const handleChangeSetPage = (plus) => (plus == true) ?setPage(page + 1) : setPage(page - 1);
+  const handleChangeSetPage = (plus) => (plus === true) ?setPage(page + 1) : setPage(page - 1);
 
   useEffect(() => {
     getCategories();

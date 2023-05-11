@@ -268,7 +268,7 @@ export const Incidence = () => {
     }
   };
 
-  const handleChangeSetPage = (plus) => (plus == true) ?setPage(page + 1) : setPage(page - 1);
+  const handleChangeSetPage = (plus) => (plus === true) ?setPage(page + 1) : setPage(page - 1);
 
   useEffect(() => {
     getCategories();

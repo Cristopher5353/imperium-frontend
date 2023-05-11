@@ -39,14 +39,14 @@ export const ModalPriority = ({
                   name="name"
                   type="text"
                   className={
-                    errors.name != ""
+                    errors.name !== ""
                       ? "form-control is-invalid"
                       : "form-control"
                   }
                   id="recipientname"
                   onChange={handleChangeInputString}
                 />
-                {errors.name != "" ? (
+                {errors.name !== "" ? (
                   <small className="help-block text-danger">
                     {errors.name}
                   </small>

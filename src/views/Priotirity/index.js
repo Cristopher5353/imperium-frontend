@@ -190,7 +190,7 @@ export const Priotiry = () => {
     setPriority({ ...priority, [e.target.name]: e.target.value });
   };
 
-  const handleChangeSetPage = (plus) => (plus == true) ?setPage(page + 1) : setPage(page - 1);
+  const handleChangeSetPage = (plus) => (plus === true) ?setPage(page + 1) : setPage(page - 1);
 
   useEffect(() => {
     getPriorities();

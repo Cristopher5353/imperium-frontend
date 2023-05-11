@@ -84,7 +84,6 @@ export const IncidenceDetail = () => {
                 type === "d"
                   ? jsonFetchGetDocument.data.document.split(".")[1]
                   : jsonFetchGetDocument.data.image.split(".")[1];
-              console.log(accept);
 
               if (type === "d") {
                 name = "documento.pdf";
@@ -112,7 +111,7 @@ export const IncidenceDetail = () => {
 
   useEffect(() => {
     getIncidenceDetail();
-  });
+  }, []);
 
   return (
     <>
