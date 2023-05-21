@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { validatedForm } from "../../custom/validateForm";
 import { ModalCategory } from "./components/ModalCategory";
 import { TableCategory } from "./components/TableCategory";
+import { useLoading } from "../../hooks/useLoading";
 
 export const Category = () => {
   const [category, setCategory] = useState({ name: "" });
@@ -14,10 +15,10 @@ export const Category = () => {
   const [errors, setErrors] = useState({ name: "" });
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const { loading, startLoading, stopLoading } = useLoading();
 
   const getCategories = async () => {
-    document.querySelector(".table-class").style.opacity = 0;
-    document.querySelector(".loader").style.display = "block";
+    startLoading();
     let token = localStorage.getItem("token");
 
     try {
@@ -42,8 +43,7 @@ export const Category = () => {
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde");
     } finally {
-      document.querySelector(".table-class").style.opacity = 1;
-      document.querySelector(".loader").style.display = "none";
+      stopLoading();
     }
   };
 
@@ -189,7 +189,8 @@ export const Category = () => {
     setCategory({ ...category, [e.target.name]: e.target.value });
   };
 
-  const handleChangeSetPage = (plus) => (plus === true) ?setPage(page + 1) : setPage(page - 1);
+  const handleChangeSetPage = (plus) =>
+    plus === true ? setPage(page + 1) : setPage(page - 1);
 
   useEffect(() => {
     getCategories();
@@ -215,17 +216,20 @@ export const Category = () => {
             <i className="fa-solid fa-plus"></i> Crear Categoría
           </button>
           <h2 className="mb-3 mt-3">Listado de Categorías</h2>
-          <div className="container-loader">
-            <span className="loader"></span>
-          </div>
-          <TableCategory
-            categories={categories}
-            handleClickUpdate={handleClickUpdate}
-            handleClickChangeState={handleClickChangeState}
-            page={page}
-            totalPages={totalPages}
-            handleChangeSetPage={handleChangeSetPage}
-          />
+          {loading ? (
+            <div className="container-loader">
+              <span className="loader"></span>
+            </div>
+          ) : (
+            <TableCategory
+              categories={categories}
+              handleClickUpdate={handleClickUpdate}
+              handleClickChangeState={handleClickChangeState}
+              page={page}
+              totalPages={totalPages}
+              handleChangeSetPage={handleChangeSetPage}
+            />
+          )}
         </div>
       </div>
       <ModalCategory

@@ -2,13 +2,17 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { decodeToken } from "../../custom/decodeToken";
+import { useLoading } from "../../hooks/useLoading";
 
 export const IncidenceDetail = () => {
   const { id } = useParams();
   const [incidenceDetail, setIncidenceDetail] = useState({});
   const [boolResponse, setBoolResponse] = useState(false);
+  const { loading, startLoading, stopLoading } = useLoading();
 
   const getIncidenceDetail = async () => {
+    startLoading();
+
     let token = localStorage.getItem("token");
 
     try {
@@ -36,8 +40,7 @@ export const IncidenceDetail = () => {
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde");
     } finally {
-      document.querySelector(".loader").style.display = "none";
-      document.getElementById("detail-show").style.opacity = 1;
+      stopLoading();
     }
   };
 
@@ -124,118 +127,128 @@ export const IncidenceDetail = () => {
             <i className="fa-solid fa-house"></i> Volver al Inicio
           </NavLink>
           <h1 className="mt-3">Detalle Incidencia</h1>
-          <div className="container-loader">
-            <span className="loader"></span>
-          </div>
-          <div className="row" id="detail-show" style={{ opacity: 0 }}>
-            <div>
-              {decodeToken().role === 2 && boolResponse === false && (
-                <NavLink
-                  to={"/dashboard/incidencias/" + id + "/respuesta"}
-                  className="nav-link collapsed"
-                >
-                  <button className="btn btn-success">
-                    <i class="fa-solid fa-star"></i> Responder
-                  </button>
-                </NavLink>
-              )}
-              {boolResponse && (
-                <NavLink
-                  to={"/dashboard/incidencias/" + id + "/respuesta/mostrar"}
-                >
-                  <button className="btn btn-success">
-                    <i class="fa-solid fa-star"></i> Ver Respuesta
-                  </button>
-                </NavLink>
-              )}
+
+          {loading ? (
+            <div className="container-loader">
+              <span className="loader"></span>
             </div>
-            <div
-              className="col-12 mb-3 p-3"
-              style={{ borderBottom: "2px solid #eee" }}
-            >
-              <i className="fa-solid fa-user text-primary me-2"></i>
-              <span>
-                {incidenceDetail.technical === null
-                  ? "Sin Asignar"
-                  : incidenceDetail.technical}
-              </span>
-            </div>
-            <div className="col-12">
-              <div className="row">
-                <div className="col-2">
-                  <p>{moment(incidenceDetail.created_at).format("DD/MM/YY")}</p>
-                </div>
-                <div className="col-10">
-                  <p>{incidenceDetail.title}</p>
-                  <p>{incidenceDetail.description}</p>
-                  <div>
-                    <strong>Documentos Adicionales</strong>
-                    {incidenceDetail.id_documents === null ? (
-                      <p>No existen documentos registrados</p>
-                    ) : (
-                      <table className="table table-striped border mt-1">
-                        <thead>
-                          <tr>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Opcion</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {String(incidenceDetail.id_documents)
-                            .split(",")
-                            .map((el, index) => (
-                              <tr key={index}>
-                                <td>{"Documento N° " + (index + 1)}</td>
-                                <td>
-                                  <button
-                                    className="bg-primary rounded text-white pe-3 ps-3 pt-1 pb-1 border-0"
-                                    onClick={() => handleClickDownload(el, "d")}
-                                  >
-                                    Descargar
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    )}
+          ) : (
+            <div className="row" id="detail-show">
+              <div>
+                {decodeToken().role === 2 && boolResponse === false && (
+                  <NavLink
+                    to={"/dashboard/incidencias/" + id + "/respuesta"}
+                    className="nav-link collapsed"
+                  >
+                    <button className="btn btn-success">
+                      <i class="fa-solid fa-star"></i> Responder
+                    </button>
+                  </NavLink>
+                )}
+                {boolResponse && (
+                  <NavLink
+                    to={"/dashboard/incidencias/" + id + "/respuesta/mostrar"}
+                  >
+                    <button className="btn btn-success">
+                      <i class="fa-solid fa-star"></i> Ver Respuesta
+                    </button>
+                  </NavLink>
+                )}
+              </div>
+              <div
+                className="col-12 mb-3 p-3"
+                style={{ borderBottom: "2px solid #eee" }}
+              >
+                <i className="fa-solid fa-user text-primary me-2"></i>
+                <span>
+                  {incidenceDetail.technical === null
+                    ? "Sin Asignar"
+                    : incidenceDetail.technical}
+                </span>
+              </div>
+              <div className="col-12">
+                <div className="row">
+                  <div className="col-2">
+                    <p>
+                      {moment(incidenceDetail.created_at).format("DD/MM/YY")}
+                    </p>
                   </div>
-                  <div>
-                    <strong>Imágenes Adicionales</strong>
-                    {incidenceDetail.id_images === null ? (
-                      <p>No existen documentos registrados</p>
-                    ) : (
-                      <table className="table table-striped border mt-1">
-                        <thead>
-                          <tr>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Opcion</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {String(incidenceDetail.id_images)
-                            .split(",")
-                            .map((el, index) => (
-                              <tr key={index}>
-                                <td>{"Imagen N° " + (index + 1)}</td>
-                                <td>
-                                  <button
-                                    className="bg-primary rounded text-white pe-3 ps-3 pt-1 pb-1 border-0"
-                                    onClick={() => handleClickDownload(el, "i")}
-                                  >
-                                    Descargar
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    )}
+                  <div className="col-10">
+                    <p>{incidenceDetail.title}</p>
+                    <p>{incidenceDetail.description}</p>
+                    <div>
+                      <strong>Documentos Adicionales</strong>
+                      {incidenceDetail.id_documents === null ? (
+                        <p>No existen documentos registrados</p>
+                      ) : (
+                        <table className="table table-striped border mt-1">
+                          <thead>
+                            <tr>
+                              <th scope="col">Nombre</th>
+                              <th scope="col">Opcion</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {String(incidenceDetail.id_documents)
+                              .split(",")
+                              .map((el, index) => (
+                                <tr key={index}>
+                                  <td>{"Documento N° " + (index + 1)}</td>
+                                  <td>
+                                    <button
+                                      className="bg-primary rounded text-white pe-3 ps-3 pt-1 pb-1 border-0"
+                                      onClick={() =>
+                                        handleClickDownload(el, "d")
+                                      }
+                                    >
+                                      Descargar
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                    <div>
+                      <strong>Imágenes Adicionales</strong>
+                      {incidenceDetail.id_images === null ? (
+                        <p>No existen documentos registrados</p>
+                      ) : (
+                        <table className="table table-striped border mt-1">
+                          <thead>
+                            <tr>
+                              <th scope="col">Nombre</th>
+                              <th scope="col">Opcion</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {String(incidenceDetail.id_images)
+                              .split(",")
+                              .map((el, index) => (
+                                <tr key={index}>
+                                  <td>{"Imagen N° " + (index + 1)}</td>
+                                  <td>
+                                    <button
+                                      className="bg-primary rounded text-white pe-3 ps-3 pt-1 pb-1 border-0"
+                                      onClick={() =>
+                                        handleClickDownload(el, "i")
+                                      }
+                                    >
+                                      Descargar
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </>

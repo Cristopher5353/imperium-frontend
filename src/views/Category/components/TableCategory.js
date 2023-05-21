@@ -11,7 +11,7 @@ export const TableCategory = ({
   handleChangeSetPage,
 }) => {
   return (
-    <div className="table-responsive table-class" style={{ opacity: 0 }}>
+    <div className="table-responsive table-class">
       <table className="table table-striped">
         <thead>
           <tr>

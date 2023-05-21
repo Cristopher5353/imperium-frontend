@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { validatedForm } from "../../custom/validateForm";
 import { ModalSubcategory } from "./components/ModalSubcategory";
 import { TableSubcategory } from "./components/TableSubcategory";
+import { useLoading } from "../../hooks/useLoading";
 
 export const Subcategory = () => {
   const [subcategory, setSubcategory] = useState({ category_id: 0, name: "" });
@@ -15,10 +16,10 @@ export const Subcategory = () => {
   const [errors, setErrors] = useState({ category_id: "", name: "" });
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const { loading, startLoading, stopLoading } = useLoading();
 
   const getSubcategories = async () => {
-    document.querySelector(".table-class").style.opacity = 0;
-    document.querySelector(".loader").style.display = "block";
+    startLoading();
     let token = localStorage.getItem("token");
 
     try {
@@ -43,8 +44,7 @@ export const Subcategory = () => {
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde");
     } finally {
-      document.querySelector(".table-class").style.opacity = 1;
-      document.querySelector(".loader").style.display = "none";
+      stopLoading();
     }
   };
 
@@ -220,7 +220,8 @@ export const Subcategory = () => {
     }
   };
 
-  const handleChangeSetPage = (plus) => (plus === true) ?setPage(page + 1) : setPage(page - 1);
+  const handleChangeSetPage = (plus) =>
+    plus === true ? setPage(page + 1) : setPage(page - 1);
 
   useEffect(() => {
     getCategories();
@@ -229,7 +230,7 @@ export const Subcategory = () => {
 
   useEffect(() => {
     getSubcategories();
-  },[page])
+  }, [page]);
 
   return (
     <>
@@ -251,17 +252,21 @@ export const Subcategory = () => {
             <i className="fa-solid fa-plus"></i> Crear Subcategoría
           </button>
           <h2 className="mb-3 mt-3">Listado de Subcategorías</h2>
-          <div className="container-loader">
-            <span className="loader"></span>
-          </div>
-          <TableSubcategory
-            subcategories={subcategories}
-            handleClickUpdate={handleClickUpdate}
-            handleClickChangeState={handleClickChangeState}
-            page={page}
-            totalPages={totalPages}
-            handleChangeSetPage={handleChangeSetPage}
-          />
+
+          {loading ? (
+            <div className="container-loader">
+              <span className="loader"></span>
+            </div>
+          ) : (
+            <TableSubcategory
+              subcategories={subcategories}
+              handleClickUpdate={handleClickUpdate}
+              handleClickChangeState={handleClickChangeState}
+              page={page}
+              totalPages={totalPages}
+              handleChangeSetPage={handleChangeSetPage}
+            />
+          )}
         </div>
       </div>
       <ModalSubcategory

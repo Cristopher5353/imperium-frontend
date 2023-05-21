@@ -13,7 +13,7 @@ export const TableIncidents = ({
   handleChangeSetPage,
 }) => {
   return (
-    <div className="table-responsive table-class" style={{ opacity: 0 }}>
+    <div className="table-responsive table-class">
       <table className="table table-striped mt-4" id="incidencias">
         <thead>
           <tr>

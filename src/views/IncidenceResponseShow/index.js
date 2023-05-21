@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
+import { useLoading } from "../../hooks/useLoading";
 
 export const IncidenceResponseShow = () => {
   const { id } = useParams();
   const [incidenceResponse, setIncidenceResponse] = useState({});
+  const { loading, startLoading, stopLoading } = useLoading();
 
   const getIncidenceResponse = async () => {
+    startLoading();
+
     let token = localStorage.getItem("token");
 
     try {
@@ -29,8 +33,7 @@ export const IncidenceResponseShow = () => {
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde");
     } finally {
-      document.querySelector(".loader").style.display = "none";
-      document.getElementById("response-incidence-show").style.opacity = 1;
+      stopLoading();
     }
   };
 
@@ -85,7 +88,7 @@ export const IncidenceResponseShow = () => {
 
   useEffect(() => {
     getIncidenceResponse();
-  },[]);
+  }, []);
 
   return (
     <>
@@ -98,52 +101,56 @@ export const IncidenceResponseShow = () => {
             <i className="fa-solid fa-house"></i> Volver al Inicio
           </NavLink>
           <h1 className="mt-3">Respuesta Incidencia</h1>
-          <div className="container-loader">
-            <span className="loader"></span>
-          </div>
-          <div id="response-incidence-show" style={{ opacity: 0 }}>
-            <strong>Respuesta</strong>
-            <textarea
-              className="form-control"
-              id="response"
-              name="response"
-              rows="10"
-              placeholder={incidenceResponse.response}
-              disabled
-            ></textarea>
-            <div className="mt-3">
-              <strong>Documentos Adicionales</strong>
-              {incidenceResponse.id_documents === null ? (
-                <p>No existen documentos registrados</p>
-              ) : (
-                <table className="table table-striped border mt-1">
-                  <thead>
-                    <tr>
-                      <th scope="col">Nombre</th>
-                      <th scope="col">Opcion</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {String(incidenceResponse.id_documents)
-                      .split(",")
-                      .map((el, index) => (
-                        <tr key={index}>
-                          <td>{"Documento N° " + (index + 1)}</td>
-                          <td>
-                            <button
-                              className="bg-primary rounded text-white pe-3 ps-3 pt-1 pb-1 border-0"
-                              onClick={() => handleClickDownload(el)}
-                            >
-                              Descargar
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              )}
+
+          {loading ? (
+            <div className="container-loader">
+              <span className="loader"></span>
             </div>
-          </div>
+          ) : (
+            <div id="response-incidence-show">
+              <strong>Respuesta</strong>
+              <textarea
+                className="form-control"
+                id="response"
+                name="response"
+                rows="10"
+                placeholder={incidenceResponse.response}
+                disabled
+              ></textarea>
+              <div className="mt-3">
+                <strong>Documentos Adicionales</strong>
+                {incidenceResponse.id_documents === null ? (
+                  <p>No existen documentos registrados</p>
+                ) : (
+                  <table className="table table-striped border mt-1">
+                    <thead>
+                      <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Opcion</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {String(incidenceResponse.id_documents)
+                        .split(",")
+                        .map((el, index) => (
+                          <tr key={index}>
+                            <td>{"Documento N° " + (index + 1)}</td>
+                            <td>
+                              <button
+                                className="bg-primary rounded text-white pe-3 ps-3 pt-1 pb-1 border-0"
+                                onClick={() => handleClickDownload(el)}
+                              >
+                                Descargar
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -5,6 +5,7 @@ import { TableIncidents } from "./components/TableIncidents";
 import { ModalSupportAssign } from "./components/ModalSupportAssign";
 import Swal from "sweetalert2";
 import { decodeToken } from "../../custom/decodeToken";
+import { useLoading } from "../../hooks/useLoading";
 
 export const Incidence = () => {
   const [incidents, setIncidents] = useState([]);
@@ -15,19 +16,21 @@ export const Incidence = () => {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [boolConfirmFilter, setBoolConfirmFilter] = useState(false);
+  const { loading, startLoading, stopLoading } = useLoading();
 
   const getIncidents = async () => {
-    document.querySelector(".table-class").style.opacity = 0;
-    document.querySelector(".loader").style.display = "block";
-    
-    let url = '';
+    startLoading();
+
+    let url = "";
 
     let token = localStorage.getItem("token");
-    
-    if(decodeToken().role === 1) {
+
+    if (decodeToken().role === 1) {
       url = `http://127.0.0.1:8000/api/incidents/page/${page}/category/${filter.category}/priority/${filter.priority}/user/0`;
     } else {
-      url =  `http://127.0.0.1:8000/api/incidents/page/${page}/category/${filter.category}/priority/${filter.priority}/user/${decodeToken().id}`;
+      url = `http://127.0.0.1:8000/api/incidents/page/${page}/category/${
+        filter.category
+      }/priority/${filter.priority}/user/${decodeToken().id}`;
     }
 
     try {
@@ -49,8 +52,7 @@ export const Incidence = () => {
     } catch (error) {
       alert("Error, vuelva a intentarlo más tarde" + error);
     } finally {
-      document.querySelector(".table-class").style.opacity = 1;
-      document.querySelector(".loader").style.display = "none";
+      stopLoading();
     }
   };
 
@@ -113,13 +115,13 @@ export const Incidence = () => {
   const handleSubmitFilter = (e) => {
     e.preventDefault();
     setPage(0);
-    setBoolConfirmFilter(boolConfirmFilter ?false :true);
+    setBoolConfirmFilter(boolConfirmFilter ? false : true);
   };
 
   const handleClickSeeAll = () => {
     setFilter({ category: 0, priority: 0 });
     setPage(0);
-    setBoolConfirmFilter(boolConfirmFilter ?false :true);
+    setBoolConfirmFilter(boolConfirmFilter ? false : true);
   };
 
   const getSupportUsersWithAssignIncidentsQuantity = async (e) => {
@@ -164,7 +166,7 @@ export const Incidence = () => {
   const handleSubmitSupportAssign = async (e) => {
     e.preventDefault();
 
-    let value = document.querySelector("input[name=userId]:checked")
+    let value = document.querySelector("input[name=userId]:checked");
 
     if (value === null) {
       Swal.fire({
@@ -268,7 +270,8 @@ export const Incidence = () => {
     }
   };
 
-  const handleChangeSetPage = (plus) => (plus === true) ?setPage(page + 1) : setPage(page - 1);
+  const handleChangeSetPage = (plus) =>
+    plus === true ? setPage(page + 1) : setPage(page - 1);
 
   useEffect(() => {
     getCategories();
@@ -303,20 +306,22 @@ export const Incidence = () => {
           handleClickSeeAll={handleClickSeeAll}
         />
 
-        <div className="container-loader">
-          <span className="loader"></span>
-        </div>
-
-        <TableIncidents
-          incidents={incidents}
-          getSupportUsersWithAssignIncidentsQuantity={
-            getSupportUsersWithAssignIncidentsQuantity
-          }
-          handleSubmitDeleteSupportAssign={handleSubmitDeleteSupportAssign}
-          page={page}
-          totalPages={totalPages}
-          handleChangeSetPage={handleChangeSetPage}
-        />
+        {loading ? (
+          <div className="container-loader">
+            <span className="loader"></span>
+          </div>
+        ) : (
+          <TableIncidents
+            incidents={incidents}
+            getSupportUsersWithAssignIncidentsQuantity={
+              getSupportUsersWithAssignIncidentsQuantity
+            }
+            handleSubmitDeleteSupportAssign={handleSubmitDeleteSupportAssign}
+            page={page}
+            totalPages={totalPages}
+            handleChangeSetPage={handleChangeSetPage}
+          />
+        )}
 
         <ModalSupportAssign
           supportUsers={supportUsers}
