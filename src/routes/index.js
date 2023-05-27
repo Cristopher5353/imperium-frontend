@@ -20,8 +20,8 @@ const RouterApp = () => {
       <BrowserRouter>
         <Routes>
           <Route index element={<Login/>}/>
-          <Route path='login' element={<Login/>}/>
-          <Route element={<ProtectedRoute isAuthenticated={decodeToken() && (decodeToken().role === 1 || decodeToken().role === 2)}/>}>
+          <Route path='/login' element={<Login/>}/>
+          <Route element={<ProtectedRoute roles={[1,2]}/>}>
             <Route path='dashboard' element={<DashBoard/>}>
               <Route index element={<Main/>} />
               <Route path='incidencias' element={<Incidence/>}/>
@@ -29,7 +29,7 @@ const RouterApp = () => {
               <Route path='incidencias/:id/respuesta/mostrar' element={<IncidenceResponseShow/>}/>
             </Route>
           </Route>
-          <Route element={<ProtectedRoute isAuthenticated={!!decodeToken() && decodeToken().role === 1}/>}>
+          <Route element={<ProtectedRoute roles={[1]}/>}>
             <Route path='dashboard' element={<DashBoard/>}>
               <Route index element={<Main/>} />
               <Route path='prioridades' element={<Priotiry/>} />
@@ -38,7 +38,7 @@ const RouterApp = () => {
               <Route path='incidencias/registrar' element={<CreateIncidence/>} />
             </Route>
           </Route>
-          <Route element={<ProtectedRoute isAuthenticated={!!decodeToken() && decodeToken().role === 2}/>}>
+          <Route element={<ProtectedRoute roles={[2]}/>}>
             <Route path='dashboard' element={<DashBoard/>}>
               <Route index element={<Main/>} />
               <Route path='incidencias/:id/respuesta' element={<IncidenceResponse/>}/>
